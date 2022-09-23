@@ -16,6 +16,7 @@ services:
   api:
     image: ruby:3.1.2
     container_name: api
+    hostname: api
     depends_on:
       db:
         condition: service_healthy
@@ -24,21 +25,30 @@ services:
     env_file:
       - .env
     working_dir: /app
-    command: bash -c "chown -R 1000:1000 . && bin/setup && rails s -b 0.0.0.0"
+    command: [ 'bash', '-c', 'chown -R 1000:1000 . && bin/setup && rails s -b 0.0.0.0' ]
     volumes:
       - rubygems:/usr/local/bundle
       - ./back:/app
     ports:
       - 3000:3000
     restart: on-failure
-    
   
-  # front:
-  #   build: .
-  #   ports: [5173]
-  #   depends_on: ['db', 'back']
+  front:
+    image: node:18
+    container_name: front
+    hostname: front
+    depends_on: [ api ]
+    ports: 
+      - 5173:5173
+    working_dir: /app
+    volumes:
+      - ./front:/app
+      - yarn-cache:/usr/local/share/.cache/yarn/v6
+    command: ['bash', '-c', 'yarn && yarn dev --host']
+    
 
 volumes:
   rubygems:
+  yarn-cache:
 
 
