@@ -1,0 +1,44 @@
+services:
+  db:
+    image: postgres:14.5
+    container_name: database
+    hostname: database
+    ports:
+      - 5432:5432
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+
+  api:
+    image: ruby:3.1.2
+    container_name: api
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - TZ=America/Sao_Paulo
+    env_file:
+      - .env
+    working_dir: /app
+    command: bash -c "chown -R 1000:1000 . && bin/setup && rails s -b 0.0.0.0"
+    volumes:
+      - rubygems:/usr/local/bundle
+      - ./back:/app
+    ports:
+      - 3000:3000
+    #restart: on-failure
+    
+  
+  # front:
+  #   build: .
+  #   ports: [5173]
+  #   depends_on: ['db', 'back']
+
+volumes:
+  rubygems:
+
+
