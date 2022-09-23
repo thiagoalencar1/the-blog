@@ -30,7 +30,7 @@ services:
       - ./back:/app
     ports:
       - 3000:3000
-    #restart: on-failure
+    restart: on-failure
     
   
   # front:
