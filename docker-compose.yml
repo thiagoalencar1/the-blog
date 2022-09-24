@@ -32,7 +32,7 @@ services:
     ports:
       - 3000:3000
     restart: on-failure
-  
+
   front:
     image: node:18
     container_name: front
@@ -45,7 +45,6 @@ services:
       - ./front:/app
       - yarn-cache:/usr/local/share/.cache/yarn/v6
     command: ['bash', '-c', 'yarn && yarn dev --host']
-    
 
 volumes:
   rubygems:
